@@ -16,27 +16,38 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async () => {
+    if (!prompt) {
+      alert("请输入具体需求后再生成预览");
+      return;
+    }
+    
     setIsGenerating(true);
-    // 模拟 AI 生成过程
-    setTimeout(() => {
-      const mockHtml = `
-        <div style="font-family: sans-serif; padding: 40px; border: 1px solid #ddd; max-width: 800px; margin: auto; background: white;">
-          <h1 style="text-align: center; color: #333;">${TEMPLATES.find(t => t.id === template)?.name}</h1>
-          <hr style="margin: 20px 0;" />
-          <div style="line-height: 1.6; color: #444;">
-            <p><strong>需求描述:</strong> ${prompt || "（未输入具体需求）"}</p>
-            <p>基于您的需求，AI 已为您生成了这份文档初稿。</p>
-            <p style="margin-top: 20px;">这是一个 MVP 预览版本。在完整版中，这里将显示由 DeepSeek 生成的专业条款和排版格式。</p>
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px;">
-              <p>示例条款：双方同意对在合作过程中知悉的任何商业秘密负有严格保密义务...</p>
-            </div>
-          </div>
-          <p style="text-align: right; margin-top: 40px; color: #888; font-size: 0.8em;">生成时间: ${new Date().toLocaleString()}</p>
-        </div>
-      `;
-      setPreviewHtml(mockHtml);
+    setPreviewHtml(""); // 清空旧内容
+    
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt,
+          template,
+          provider: "gemini", // 默认先用免费的 Gemini
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      setPreviewHtml(data.html);
+    } catch (err: any) {
+      console.error("生成失败:", err);
+      alert(`生成失败: ${err.message || "未知错误"}`);
+    } finally {
       setIsGenerating(false);
-    }, 1500);
+    }
   };
 
   const handleDownload = () => {
