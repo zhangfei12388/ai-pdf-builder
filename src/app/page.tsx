@@ -31,7 +31,7 @@ export default function Home() {
         body: JSON.stringify({
           prompt,
           template,
-          provider: "gemini", // 默认先用免费的 Gemini
+          provider: "siliconflow", // 切换到 SiliconFlow
         }),
       });
 
