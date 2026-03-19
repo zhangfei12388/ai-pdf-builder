@@ -5,6 +5,14 @@ export const runtime = "edge";
 export async function POST(req: NextRequest) {
   try {
     const { prompt, template } = await req.json();
+    const apiKey = process.env.SILICONFLOW_API_KEY;
+
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "Missing SILICONFLOW_API_KEY in environment variables." }), { 
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
     const templateGuides = {
       resume: "使用现代双栏布局。左侧侧边栏(30%)包含个人头像占位符、联系方式、教育背景和技能清单；右侧主栏(70%)包含自我总结、工作经历（按时间倒序）和项目经验。使用精美的字体图标（如 📧, 📱, 🔗）。工作经历必须包含公司名、职位、时间和详细描述。使用 .section-title 类区分模块。",
