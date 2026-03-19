@@ -5,10 +5,13 @@ export const runtime = "edge";
 export async function POST(req: NextRequest) {
   try {
     const { prompt, template } = await req.json();
-    const apiKey = process.env.SILICONFLOW_API_KEY;
+    const apiKey = process.env.SILICONFLOW_API_KEY || process.env.NEXT_PUBLIC_SILICONFLOW_API_KEY;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: "Missing SILICONFLOW_API_KEY in environment variables." }), { 
+      return new Response(JSON.stringify({ 
+        error: "Missing SILICONFLOW_API_KEY. Please set it in Cloudflare Pages Settings -> Environment variables.",
+        envKeysFound: Object.keys(process.env).filter(k => k.includes("API"))
+      }), { 
         status: 500,
         headers: { "Content-Type": "application/json" }
       });
