@@ -5,7 +5,9 @@ export const runtime = "edge";
 export async function POST(req: NextRequest) {
   try {
     const { prompt, template } = await req.json();
-    const apiKey = process.env.SILICONFLOW_API_KEY || process.env.NEXT_PUBLIC_SILICONFLOW_API_KEY;
+    
+    // 强制使用硬编码测试（仅限调试，完成后立即撤回）
+    const apiKey = "sk-qqlptoeotxrgtfhhebecdkrwczsuifdlbcdxrrppqtebkofz";
 
     if (!apiKey) {
       return new Response(JSON.stringify({ 
