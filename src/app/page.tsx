@@ -31,7 +31,10 @@ export default function Home() {
         body: JSON.stringify({ prompt, template }),
       });
 
-      if (!response.ok) throw new Error(`生成失败: ${response.statusText}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `生成失败: ${response.statusText}`);
+      }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder("utf-8"); // 指定 UTF-8 解码
